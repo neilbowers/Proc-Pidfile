@@ -1,3 +1,5 @@
 1.001 - Tue Oct 21 14:03:25 BST 2003
     - added README and Changes
     - changed default pidfile to /var/run or $tmpdir
+1.002 - Thu Jan 15 17:00:44 GMT 2004
+    - minor POD changes, and fixed test that was checking for exit status

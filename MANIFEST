@@ -4,3 +4,4 @@ Makefile.PL
 Pidfile.pm
 README
 t/pidfile.t
+META.yml                                 Module meta-data (added by MakeMaker)

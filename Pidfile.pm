@@ -1,6 +1,6 @@
 package Proc::Pidfile;
 
-$VERSION = '1.001';
+$VERSION = '1.002';
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
 require File::Spec;
@@ -143,9 +143,14 @@ the curent process
 
     my $pp = Proc::Pidfile->new( pidfile = "/path/to/your/pidfile" );
     # if the pidfile already exists, die here
-    $pidfile = $obj->pp();
+    $pidfile = $pp->pidfile();
     undef $pp;
     # unlink $pidfile here
+
+    my $pp = Proc::Pidfile->new();
+    # creates pidfile in default location - /var/run or File::Spec->tmpdir ...
+    my $pidfile = $pp=>pidfile();
+    # tells you where this pidfile is ...
 
     my $pp = Proc::Pidfile->new( silent => 1 );
     # if the pidfile already exists, exit silently here
