@@ -3,3 +3,5 @@
     - changed default pidfile to /var/run or $tmpdir
 1.002 - Thu Jan 15 17:00:44 GMT 2004
     - minor POD changes, and fixed test that was checking for exit status
+1.003 - Thu Apr  1 11:35:38 BST 2004
+    - 1 char change to POD talk about minimal release!

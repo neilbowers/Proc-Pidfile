@@ -1,6 +1,6 @@
 package Proc::Pidfile;
 
-$VERSION = '1.002';
+$VERSION = '1.003';
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
 require File::Spec;
@@ -141,7 +141,7 @@ the curent process
 
 =head1 SYNOPSIS
 
-    my $pp = Proc::Pidfile->new( pidfile = "/path/to/your/pidfile" );
+    my $pp = Proc::Pidfile->new( pidfile => "/path/to/your/pidfile" );
     # if the pidfile already exists, die here
     $pidfile = $pp->pidfile();
     undef $pp;
