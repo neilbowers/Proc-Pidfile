@@ -1,10 +1,14 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Proc-Pidfile
-version:      1.003
+version:      1.004
 version_from: Pidfile.pm
 installdirs:  site
 requires:
+    Fcntl:                         0
+    File::Basename:                0
+    File::Spec:                    0
+    Proc::ProcessTable:            0
 
 distribution_type: module
 generated_by: ExtUtils::MakeMaker version 6.17

@@ -5,3 +5,5 @@
     - minor POD changes, and fixed test that was checking for exit status
 1.003 - Thu Apr  1 11:35:38 BST 2004
     - 1 char change to POD talk about minimal release!
+1.004 - Mon Jun 21 13:26:31 BST 2004
+    - use Proc::ProcessTable instead of kill 0

@@ -1,8 +1,9 @@
 package Proc::Pidfile;
 
-$VERSION = '1.003';
+$VERSION = '1.004';
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
+require Proc::ProcessTable;
 require File::Spec;
 
 sub new 
@@ -57,6 +58,14 @@ sub _get_pid
     return $pid;
 }
 
+sub _is_running
+{
+    my $pid = shift;
+    my $table = Proc::ProcessTable->new()->table;
+    my %processes = map { $_->pid => $_ } @$table;
+    return exists $processes{$pid};
+}
+
 sub _create_pidfile
 {
     my $self = shift;
@@ -66,7 +75,7 @@ sub _create_pidfile
         $self->_verbose( "pidfile $pidfile exists\n" );
         my $pid = $self->_get_pid();
         $self->_verbose( "pid in pidfile $pidfile = $pid\n" );
-        if ( kill( 0, $pid ) )
+        if ( _is_running( $pid ) )
         {
             if ( $self->{silent} )
             {
@@ -79,7 +88,7 @@ sub _create_pidfile
         }
         else
         {
-            $self->_verbose( "$pid has died - relacing pidfile\n" );
+            $self->_verbose( "$pid has died - replacing pidfile\n" );
             open( PID, ">$pidfile" ) or die "Can't write to $pidfile\n";
             print PID "$$\n";
             close( PID );

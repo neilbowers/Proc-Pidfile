@@ -4,4 +4,10 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'		=> 'Proc::Pidfile',
     'VERSION_FROM'	=> 'Pidfile.pm', # finds $VERSION
+    'PREREQ_PM'		=> {
+        Proc::ProcessTable => 0,
+        Fcntl => 0,
+        File::Basename => 0,
+        File::Spec=> 0,
+    }, # e.g., Module::Name => 1.1
 );
