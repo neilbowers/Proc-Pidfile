@@ -1,7 +1,9 @@
 package Proc::Pidfile;
 
-$VERSION = '1.000';
+$VERSION = '1.001';
 use Fcntl qw( :flock );
+use File::Basename qw( basename );
+require File::Spec;
 
 sub new 
 { 
@@ -10,8 +12,10 @@ sub new
     my $self = bless \%args, $class;
     unless ( $self->{pidfile} )
     {
-        my $pidfile = $0;
-        $pidfile = "$0.pid" unless $pidfile =~ s/\.[^.]+$/.pid/;
+        my $basename = basename( $0 );
+        my $dir = -w "/var/run" ? "/var/run" : File::Spec->tmpdir();
+        die "Can't write to $dir\n" unless -w $dir;
+        $pidfile = "$dir/$basename.pid";
         $self->_verbose( "pidfile: $pidfile\n" );
         $self->{pidfile} = $pidfile;
     }
@@ -152,11 +156,7 @@ the curent process
 
 Proc::Pidfile is a very simple OO interface which manages a pidfile for the
 current process. You can pass the path to a pidfile to use as an argument to
-the constructor, or you can let Proc::Pidfile choose one (basically, by either
-replacing the extension with or appending to the executable name '.pid'; i.e.:
-
-    /path/basename.ext => /path/basename.pid
-    /path/basename => /path/basename.pid
+the constructor, or you can let Proc::Pidfile choose one (basically, "/var/run/$basename", if you can write to /var/run, otherwise "/$tmpdir/$basename").
 
 Pidfiles created by Proc::Pidfile are automatically removed on destruction of
 the object. At destruction, the module checks the process id in the pidfile

@@ -1,0 +1,44 @@
+Proc::Pidfile
+=============
+
+Description
+-----------
+
+Proc::Pidfile is a very simple OO interface which manages a pidfile for the
+current process. You can pass the path to a pidfile to use as an argument to
+the constructor, or you can let Proc::Pidfile choose one (basically, "/var/run/$basename", if you can write to /var/run, otherwise "/$tmpdir/$basename").
+
+Pidfiles created by Proc::Pidfile are automatically removed on destruction of
+the object. At destruction, the module checks the process id in the pidfile
+against its own, and against its parents (in case it is a spawned child of the
+process that originally created the Proc::Pidfile object), and barfs if it
+doesn't match either.
+
+If you pass a "silent" parameter to the constructor, then it will still check
+for the existence of a pidfile, but will exit silently if one is found. This is
+useful for, for example, cron jobs, where you don't want to create a new
+process if one is already running, but you don't necessarily want to be
+informed of this by cron.
+
+
+Installation
+------------
+
+The usual ...
+
+> perl Makefile.PL
+> make
+[ > make test ]
+> make install
+
+Copyright
+---------
+
+Copyright (c) 2003 Ave Wrigley. All rights reserved. This program is free
+software; you can redistribute it and/or modify it under the same terms as Perl
+itself.
+
+Author
+------
+
+Ave Wrigley <Ave.Wrigley@itn.co.uk>
