@@ -1,6 +1,6 @@
 package Proc::Pidfile;
 
-$VERSION = '1.004';
+$VERSION = '1.005';
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
 require Proc::ProcessTable;
@@ -83,7 +83,7 @@ sub _create_pidfile
             }
             else
             {
-                die "$0 already running: $pid\n";
+                die "$0 already running: $pid ($pidfile)\n";
             }
         }
         else

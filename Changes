@@ -7,3 +7,5 @@
     - 1 char change to POD talk about minimal release!
 1.004 - Mon Jun 21 13:26:31 BST 2004
     - use Proc::ProcessTable instead of kill 0
+1.004 - Wed Sep 27 10:29:30 BST 2006
+    - added pidfile to "already running" message
