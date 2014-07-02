@@ -197,7 +197,9 @@ L<https://github.com/neilbowers/Proc-Pidfile>
 
 =head1 AUTHOR
 
-Ave Wrigley <Ave.Wrigley@itn.co.uk>
+Ave Wrigley E<lt>awrigley@cpan.orgE<gt>
+
+Now maintained by Neil Bowers E<lt>neilb@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
