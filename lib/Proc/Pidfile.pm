@@ -1,8 +1,12 @@
 package Proc::Pidfile;
 
-$VERSION = '1.005';
+use 5.006;
+use strict;
+use warnings;
+
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
+use Carp qw/ carp croak /;
 require Proc::ProcessTable;
 require File::Spec;
 
@@ -15,8 +19,8 @@ sub new
     {
         my $basename = basename( $0 );
         my $dir = -w "/var/run" ? "/var/run" : File::Spec->tmpdir();
-        die "Can't write to $dir\n" unless -w $dir;
-        $pidfile = "$dir/$basename.pid";
+        croak "Can't write to $dir\n" unless -w $dir;
+        my $pidfile = "$dir/$basename.pid";
         $self->_verbose( "pidfile: $pidfile\n" );
         $self->{pidfile} = $pidfile;
     }
@@ -27,6 +31,7 @@ sub new
 sub DESTROY
 {
     my $self = shift;
+
     $self->_destroy_pidfile();
 }
 
@@ -48,7 +53,7 @@ sub _get_pid
     my $self = shift;
     my $pidfile = $self->{pidfile};
     $self->_verbose( "get pid from $pidfile\n" );
-    open( PID, $pidfile ) or die "can't read pid file $pidfile\n";
+    open( PID, $pidfile ) or croak "can't read pid file $pidfile\n";
     flock( PID, LOCK_SH );
     my $pid = <PID>;
     chomp( $pid );
@@ -83,13 +88,13 @@ sub _create_pidfile
             }
             else
             {
-                die "$0 already running: $pid ($pidfile)\n";
+                croak "$0 already running: $pid ($pidfile)\n";
             }
         }
         else
         {
             $self->_verbose( "$pid has died - replacing pidfile\n" );
-            open( PID, ">$pidfile" ) or die "Can't write to $pidfile\n";
+            open( PID, ">$pidfile" ) or croak "Can't write to $pidfile\n";
             print PID "$$\n";
             close( PID );
         }
@@ -97,7 +102,7 @@ sub _create_pidfile
     else
     {
         $self->_verbose( "no pidfile $pidfile\n" );
-        open( PID, ">$pidfile" ) or die "Can't write to $pidfile\n";
+        open( PID, ">$pidfile" ) or croak "Can't write to $pidfile\n";
         flock( PID, LOCK_EX );
         print PID "$$\n";
         flock( PID, LOCK_UN );
@@ -114,26 +119,24 @@ sub _destroy_pidfile
     return unless $self->{created};
     my $pidfile = $self->{pidfile};
     $self->_verbose( "destroy $pidfile\n" );
-    unless ( $pidfile and -e $pidfile )
-    {
-        die "pidfile $pidfile doesn't exist\n";
-    }
-    my $pid = $self->_get_pid();
-    $self->_verbose( "pid in $pidfile = $pid\n" );
-    if ( $pid == $$ )
-    {
-        $self->_verbose( "remove pidfile: $pidfile\n" );
-        unlink( $pidfile ) if $pidfile and -e $pidfile;
-    }
-    else
-    {
-        $self->_verbose(  "$pidfile not my pidfile - maybe my parents?\n" );
-        my $ppid = getppid();
-        $self->_verbose(  "parent pid = $ppid\n" );
-        if ( $ppid != $pid )
-        {
-            die "pid $pid in $pidfile is not mine ($$) - I am $0 - or my parents ($ppid)\n";
+    if ( $pidfile and -e $pidfile ) {
+        my $pid = $self->_get_pid();
+        $self->_verbose( "pid in $pidfile = $pid\n" );
+        if ( $pid == $$ ) {
+            $self->_verbose( "remove pidfile: $pidfile\n" );
+            unlink( $pidfile ) if $pidfile and -e $pidfile;
         }
+        else {
+            $self->_verbose(  "$pidfile not my pidfile - maybe my parents?\n" );
+            my $ppid = getppid();
+            $self->_verbose(  "parent pid = $ppid\n" );
+            if ( $ppid != $pid ) {
+                carp "pid $pid in $pidfile is not mine ($$) - I am $0 - or my parents ($ppid)\n";
+            }
+        }
+    }
+    else {
+        carp "pidfile $pidfile doesn't exist\n";
     }
 }
 
