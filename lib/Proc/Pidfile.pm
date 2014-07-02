@@ -191,6 +191,10 @@ informed of this by cron.
 
 Proc::PID::File
 
+=head1 REPOSITORY
+
+L<https://github.com/neilbowers/Proc-Pidfile>
+
 =head1 AUTHOR
 
 Ave Wrigley <Ave.Wrigley@itn.co.uk>

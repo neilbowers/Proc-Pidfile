@@ -7,6 +7,7 @@ Revision history for Perl module Proc::Pidfile
       since in 5.14+, die inside DESTROY doesn't work how you might expect.
       RT#66873
     - Switched to Dist::Zilla
+    - Added github repo to pod
 
 1.005 2006-09-27 AWRIGLEY
     - added pidfile to "already running" message
