@@ -1,6 +1,7 @@
 Revision history for Perl module Proc::Pidfile
 
 1.01 2014-07-02 NEILB
+    - Moved Pidfile.pm to lib/Proc/Pidfile.pm
     - Reformatted this file as per CPAN::Changes::Spec
 
 1.005 2006-09-27 AWRIGLEY
