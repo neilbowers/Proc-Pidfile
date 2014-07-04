@@ -7,7 +7,6 @@ use warnings;
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
 use Carp qw/ carp croak /;
-require Proc::ProcessTable;
 require File::Spec;
 
 sub new 
@@ -66,9 +65,17 @@ sub _get_pid
 sub _is_running
 {
     my $pid = shift;
-    my $table = Proc::ProcessTable->new()->table;
-    my %processes = map { $_->pid => $_ } @$table;
-    return exists $processes{$pid};
+
+    if ($^O eq 'riscos') {
+        require Proc::ProcessTable;
+
+        my $table = Proc::ProcessTable->new()->table;
+        my %processes = map { $_->pid => $_ } @$table;
+        return exists $processes{$pid};
+    }
+    else {
+        return kill(0, $pid) || $!{'EPERM'};
+    }
 }
 
 sub _create_pidfile
