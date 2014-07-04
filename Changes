@@ -1,5 +1,10 @@
 Revision history for Perl module Proc::Pidfile
 
+1.02 2014-07-04 NEILB
+    - Use kill(0,$pid) to check whether process is still running,
+      rather than using Proc::ProcessTable. Apart from on RISC OS.
+      DEPESZ++ for RT#56630.
+
 1.01 2014-07-02 NEILB
     - Moved Pidfile.pm to lib/Proc/Pidfile.pm
     - Reformatted this file as per CPAN::Changes::Spec
