@@ -53,8 +53,9 @@ sub _get_pid
     my $pidfile = $self->{pidfile};
     $self->_verbose( "get pid from $pidfile\n" );
     open( PID, $pidfile ) or croak "can't read pid file $pidfile\n";
-    flock( PID, LOCK_SH );
+    flock( PID, LOCK_SH ) or croak "can't lock pid file $pidfile\n";
     my $pid = <PID>;
+    croak "can't get pid from pidfile $pidfile\n" if not defined($pid);
     chomp( $pid );
     flock( PID, LOCK_UN );
     close( PID );
@@ -109,11 +110,11 @@ sub _create_pidfile
     else
     {
         $self->_verbose( "no pidfile $pidfile\n" );
-        open( PID, ">$pidfile" ) or croak "Can't write to $pidfile\n";
-        flock( PID, LOCK_EX );
-        print PID "$$\n";
+        open( PID, ">$pidfile" ) or croak "Can't write to $pidfile: $!\n";
+        flock( PID, LOCK_EX ) or croak "Can't lock pid file $pidfile\n";
+        print PID "$$\n" or croak "Can't write to pid file $pidfile\n";
         flock( PID, LOCK_UN );
-        close( PID );
+        close( PID ) or croak "Can't close pid file $pidfile: $!\n";
         $self->_verbose( "pidfile $pidfile created\n" );
     }
     $self->{created} = 1;

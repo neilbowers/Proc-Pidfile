@@ -4,7 +4,6 @@
 use strict;
 
 use Test::More tests => 24;
-use Proc::ProcessTable;
 BEGIN { require_ok( 'Proc::Pidfile' ); }
 my ( $err, $obj, $pidfile, $ppid, $pid );
 # test for simple pidfile creation and destruction
@@ -82,11 +81,9 @@ is( $? >> 8, 0, "child spotted and ignored existing pidfile" );
 $pidfile = '/tmp/Proc::Pidfile.test.pid';
 unlink( $pidfile ) if -e $pidfile;
 ok( open( FH, ">$pidfile" ), "open pidfile" );
-# find a free pid ...
-my $table = Proc::ProcessTable->new()->table;
-my %processes = map { $_->pid => $_ } @$table;
-$pid = 1;
-$pid++ while exists $processes{$pid};
+
+$pid = find_unused_pid();
+
 print FH $pid;
 close( FH );
 eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
@@ -97,14 +94,50 @@ undef $obj;
 $pidfile = '/tmp/Proc::Pidfile.test.pid';
 unlink( $pidfile ) if -e $pidfile;
 ok( open( FH, ">$pidfile" ), "open pidfile" );
-# find a used pid ...
-$table = Proc::ProcessTable->new()->table;
-%processes = map { $_->pid => $_ } @$table;
-$pid = 1;
-$pid++ until exists $processes{$pid} and $processes{$pid}->uid != $<;
+
+$pid = find_pid_in_use_by_someone_else();
+
 print FH $pid;
 close( FH );
 eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
 $err = $@; undef $@;
 like( $err, qr/already running: $pid/, "other users pid" );
 undef $obj;
+
+
+sub find_unused_pid
+{
+    my $pid = 1;
+
+    if ($^O eq 'riscos') {
+        require Proc::ProcessTable;
+        my $table = Proc::ProcessTable->new()->table;
+        my %processes = map { $_->pid => $_ } @$table;
+
+        $pid++ while exists $processes{$pid};
+    }
+    else {
+        $pid++ while (kill(0, $pid) || $!{'EPERM'});
+    }
+
+    return $pid;
+}
+
+sub find_pid_in_use_by_someone_else
+{
+    my $pid = 1;
+
+    if ($^O eq 'riscos') {
+        require Proc::ProcessTable;
+        my $table = Proc::ProcessTable->new()->table;
+        my %processes = map { $_->pid => $_ } @$table;
+
+        $pid++ until (    exists($processes{$pid})
+                      and $processes{$pid}->uid != $<);
+    }
+    else {
+        $pid++ until (!kill(0, $pid) && $!{'EPERM'});
+    }
+    return $pid;
+}
+

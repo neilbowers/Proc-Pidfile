@@ -1,5 +1,15 @@
 Revision history for Perl module Proc::Pidfile
 
+1.04 2014-07-05 NEILB
+    - Testsuite was still using Proc::ProcessTable, which meant that the
+      change in 1.02 would result in failed tests if you didn't already
+      have Proc::ProcessTable installed. Refactored testsuite.
+
+1.03 2014-07-05 NEILB
+    - Check whether operations on the pid file (read, write, lock, close)
+      are successful, and croak if not.
+      Thanks to John Tantalo for RT#67589.
+
 1.02 2014-07-04 NEILB
     - Use kill(0,$pid) to check whether process is still running,
       rather than using Proc::ProcessTable. Apart from on RISC OS.
