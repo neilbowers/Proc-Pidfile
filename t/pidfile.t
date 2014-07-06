@@ -1,7 +1,9 @@
 #!/bin/env perl -w
 # vim:filetype=perl
 
+use 5.006;
 use strict;
+use warnings;
 
 use Test::More tests => 24;
 BEGIN { require_ok( 'Proc::Pidfile' ); }
@@ -13,7 +15,7 @@ ok( -e $pidfile, "pidfile created" );
 undef $obj;
 ok( ! -e $pidfile, "pidfile destroyed" );
 # test for expicit pidfile path creation and destruction
-$pidfile = '/tmp/Proc::Pidfile.test.pid';
+$pidfile = '/tmp/Proc-Pidfile.test.pid';
 unlink( $pidfile ) if -e $pidfile;
 $obj = Proc::Pidfile->new( pidfile => $pidfile );
 is( $obj->pidfile(), $pidfile, "temp pidfile matches" );
@@ -78,7 +80,7 @@ ok( defined( $pid ), "fork successful" );
 is( $pid, waitpid( $pid, 0 ), "silent child exited" );
 is( $? >> 8, 0, "child spotted and ignored existing pidfile" );
 # check that bogus or zombie pidfile is ignored
-$pidfile = '/tmp/Proc::Pidfile.test.pid';
+$pidfile = '/tmp/Proc-Pidfile.test.pid';
 unlink( $pidfile ) if -e $pidfile;
 ok( open( FH, ">$pidfile" ), "open pidfile" );
 
@@ -91,7 +93,7 @@ $err = $@; undef $@;
 ok( ! $err, "bogus pidfile ignored" );
 undef $obj;
 # check that pidfile created by somebody else works ...
-$pidfile = '/tmp/Proc::Pidfile.test.pid';
+$pidfile = '/tmp/Proc-Pidfile.test.pid';
 unlink( $pidfile ) if -e $pidfile;
 ok( open( FH, ">$pidfile" ), "open pidfile" );
 

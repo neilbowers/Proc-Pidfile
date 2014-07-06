@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Pidfile
 
+1.05 2014-07-06 NEILB
+    - The testsuite was trying to create files with 'Proc::Pidfile' in the
+      name, which Windows didn't like. CPAN Testers++
+
 1.04 2014-07-05 NEILB
     - Testsuite was still using Proc::ProcessTable, which meant that the
       change in 1.02 would result in failed tests if you didn't already
