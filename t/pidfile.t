@@ -86,6 +86,8 @@ ok( open( FH, ">$pidfile" ), "open pidfile" );
 
 $pid = find_unused_pid();
 
+BAIL_OUT("Can't find unused pid -- this shouldn't happen!") if !defined($pid);
+
 print FH $pid;
 close( FH );
 eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
@@ -99,13 +101,17 @@ ok( open( FH, ">$pidfile" ), "open pidfile" );
 
 $pid = find_pid_in_use_by_someone_else();
 
-print FH $pid;
-close( FH );
-eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
-$err = $@; undef $@;
-like( $err, qr/already running: $pid/, "other users pid" );
-undef $obj;
+SKIP: {
+    skip("can't find appropriate pid in use on this OS", 1)
+        unless defined($pid);
 
+    print FH $pid;
+    close( FH );
+    eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
+    $err = $@; undef $@;
+    like( $err, qr/already running: $pid/, "other users pid" );
+    undef $obj;
+}
 
 sub find_unused_pid
 {
@@ -116,12 +122,13 @@ sub find_unused_pid
         my $table = Proc::ProcessTable->new()->table;
         my %processes = map { $_->pid => $_ } @$table;
 
-        $pid++ while exists $processes{$pid};
+        $pid++ while $pid != 0 && exists($processes{$pid});
     }
     else {
-        $pid++ while (kill(0, $pid) || $!{'EPERM'});
+        $pid++ while $pid != 0 && (kill(0, $pid) || $!{'EPERM'});
     }
 
+    return undef if $pid == 0;
     return $pid;
 }
 
@@ -134,12 +141,13 @@ sub find_pid_in_use_by_someone_else
         my $table = Proc::ProcessTable->new()->table;
         my %processes = map { $_->pid => $_ } @$table;
 
-        $pid++ until (    exists($processes{$pid})
-                      and $processes{$pid}->uid != $<);
+        $pid++ until $pid == 0 || (    exists($processes{$pid})
+                                   and $processes{$pid}->uid != $<);
     }
     else {
-        $pid++ until (!kill(0, $pid) && $!{'EPERM'});
+        $pid++ until $pid == 0 || (!kill(0, $pid) && $!{'EPERM'});
     }
+    return undef if $pid == 0;
     return $pid;
 }
 
