@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Pidfile
 
+1.05 2014-07-07 NEILB
+    - getppid() not supported on Win32 and RISC OS, so now we check if
+      we're running those OSes, and don't don't it if we are.
+
 1.05 2014-07-06 NEILB
     - The testsuite was trying to create files with 'Proc::Pidfile' in the
       name, which Windows didn't like. CPAN Testers++

@@ -134,13 +134,16 @@ sub _destroy_pidfile
             $self->_verbose( "remove pidfile: $pidfile\n" );
             unlink( $pidfile ) if $pidfile and -e $pidfile;
         }
-        else {
-            $self->_verbose(  "$pidfile not my pidfile - maybe my parents?\n" );
+        elsif ($^O ne 'MSWin32' && $^O ne 'riscos') {
+            $self->_verbose(  "$pidfile not my pidfile - maybe my parent's?\n" );
             my $ppid = getppid();
             $self->_verbose(  "parent pid = $ppid\n" );
             if ( $ppid != $pid ) {
                 carp "pid $pid in $pidfile is not mine ($$) - I am $0 - or my parents ($ppid)\n";
             }
+        }
+        else {
+            $self->_verbose(  "$pidfile not my pidfile - can't check if it's my parent's on this OS\n" );
         }
     }
     else {
