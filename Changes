@@ -1,5 +1,10 @@
 Revision history for Perl module Proc::Pidfile
 
+1.06_01 2014-09-16 NEILB
+    - The testsuite would sometimes hang, as a result of the way it was
+      looking for PIDs. Changed the way this works, and skip the relevant
+      tests if we can't find PIDs. RT#96998 and report from AWRIGLEY.
+
 1.06 2014-07-07 NEILB
     - getppid() not supported on Win32 and RISC OS, so now we check if
       we're running those OSes, and don't don't it if we are.
