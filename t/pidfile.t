@@ -138,7 +138,7 @@ sub find_unused_pid
         $pid++ while $pid <= $MAXPID && (kill(0, $pid) || $!{'EPERM'});
     }
 
-    return undef if $pid == 0;
+    return undef if $pid > $MAXPID;
     return $pid;
 }
 

@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Pidfile
 
+1.06_02 2014-09-18 NEILB
+    - The function looking for an unused pid would return $MAXPID if it failed,
+      rather than the expected undef. AWRIGLEY++
+
 1.06_01 2014-09-16 NEILB
     - The testsuite would sometimes hang, as a result of the way it was
       looking for PIDs. Changed the way this works, and skip the relevant
