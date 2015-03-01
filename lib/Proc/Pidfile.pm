@@ -172,7 +172,7 @@ the curent process
 
     my $pp = Proc::Pidfile->new();
     # creates pidfile in default location - /var/run or File::Spec->tmpdir ...
-    my $pidfile = $pp=>pidfile();
+    my $pidfile = $pp->pidfile();
     # tells you where this pidfile is ...
 
     my $pp = Proc::Pidfile->new( silent => 1 );
