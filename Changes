@@ -1,5 +1,15 @@
 Revision history for Perl module Proc::Pidfile
 
+1.07 2018-09-06 NEILB
+    - Added [MetaProvides::Package] to dist.ini to address Kwalitee
+      suggestion. NAWGLAN++
+    - Doc fix from NAWGLAN++
+    - The function looking for an unused pid would return $MAXPID if it failed,
+      rather than the expected undef. AWRIGLEY++
+    - The testsuite would sometimes hang, as a result of the way it was
+      looking for PIDs. Changed the way this works, and skip the relevant
+      tests if we can't find PIDs. RT#96998 and report from AWRIGLEY.
+
 1.06_03 2015-03-01 NEILB
     - Added [MetaProvides::Package] to dist.ini to address Kwalitee
       suggestion. NAWGLAN++
