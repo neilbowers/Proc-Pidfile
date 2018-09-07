@@ -210,7 +210,7 @@ informed of this by cron.
 
 =head1 SEE ALSO
 
-Proc::PID::File
+L<Proc::PID::File>
 
 =head1 REPOSITORY
 
