@@ -20,6 +20,11 @@ sub new
         my $dir = -w "/var/run" ? "/var/run" : File::Spec->tmpdir();
         croak "Can't write to $dir\n" unless -w $dir;
         my $pidfile = "$dir/$basename.pid";
+
+        # untaint the path, since it includes externally generated info
+        # TODO: should we be a bit more pedantic on "valid path"?
+        $pidfile = $1 if ($pidfile =~ /^\s*(.*)\s*/);
+
         $self->_verbose( "pidfile: $pidfile\n" );
         $self->{pidfile} = $pidfile;
     }
@@ -55,7 +60,12 @@ sub _get_pid
     open( PID, $pidfile ) or croak "can't read pid file $pidfile\n";
     flock( PID, LOCK_SH ) or croak "can't lock pid file $pidfile\n";
     my $pid = <PID>;
-    croak "can't get pid from pidfile $pidfile\n" if not defined($pid);
+    if (defined($pid) && $pid =~ /([0-9]+)/) {
+        $pid = $1;
+    }
+    else {
+        croak "can't get pid from pidfile $pidfile\n";
+    }
     chomp( $pid );
     flock( PID, LOCK_UN );
     close( PID );
