@@ -4,9 +4,10 @@ use 5.006;
 use strict;
 use warnings;
 
-use Fcntl qw( :flock );
-use File::Basename qw( basename );
-use Carp qw/ carp croak /;
+use Fcntl           qw/ :flock     /;
+use File::Basename  qw/ basename   /;
+use Carp            qw/ carp croak /;
+use Time::HiRes     qw/ usleep     /;
 require File::Spec;
 
 sub new 
@@ -14,6 +15,9 @@ sub new
     my $class = shift;
     my %args = @_;
     my $self = bless \%args, $class;
+
+    $self->{attempts} = 3 unless defined($self->{attempts});
+
     unless ( $self->{pidfile} )
     {
         my $basename = basename( $0 );
@@ -91,34 +95,43 @@ sub _is_running
 
 sub _create_pidfile
 {
-    my $self = shift;
+    my $self    = shift;
     my $pidfile = $self->{pidfile};
-    if ( -e $pidfile )
-    {
+    my $attempt = 1;
+
+    while ( -e $pidfile ) {
         $self->_verbose( "pidfile $pidfile exists\n" );
         my $pid = $self->_get_pid();
         $self->_verbose( "pid in pidfile $pidfile = $pid\n" );
-        if ( _is_running( $pid ) )
-        {
-            if ( $self->{silent} )
-            {
+        if ( _is_running( $pid ) ) {
+            
+            # this might be a race condition, or parallel smoke testers,
+            # so we'll back off a random amount of time and try again
+            if ($attempt <= $self->{attempts}) {
+                ++$attempt;
+                # TODO: let's try this. Guessing we don't have to
+                #       bother with backoff times
+                usleep(100 + rand(300));
+                next;
+            }
+
+            if ( $self->{silent} ) {
                 exit;
             }
-            else
-            {
+            else {
                 croak "$0 already running: $pid ($pidfile)\n";
             }
         }
-        else
-        {
+        else {
             $self->_verbose( "$pid has died - replacing pidfile\n" );
             open( PID, ">$pidfile" ) or croak "Can't write to $pidfile\n";
             print PID "$$\n";
             close( PID );
+            last;
         }
     }
-    else
-    {
+
+    if (not -e $pidfile) {
         $self->_verbose( "no pidfile $pidfile\n" );
         open( PID, ">$pidfile" ) or croak "Can't write to $pidfile: $!\n";
         flock( PID, LOCK_EX ) or croak "Can't lock pid file $pidfile\n";
@@ -127,6 +140,7 @@ sub _create_pidfile
         close( PID ) or croak "Can't close pid file $pidfile: $!\n";
         $self->_verbose( "pidfile $pidfile created\n" );
     }
+
     $self->{created} = 1;
 }
 
