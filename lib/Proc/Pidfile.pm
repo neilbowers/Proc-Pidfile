@@ -18,8 +18,7 @@ sub new
 
     $self->{retries} = 2 unless defined($self->{retries});
 
-    unless ( $self->{pidfile} )
-    {
+    unless ( $self->{pidfile} ) {
         my $basename = basename( $0 );
         my $dir = -w "/var/run" ? "/var/run" : File::Spec->tmpdir();
         croak "Can't write to $dir\n" unless -w $dir;
@@ -110,7 +109,9 @@ sub _create_pidfile
             if ($attempt <= $self->{retries}) {
                 ++$attempt;
                 # TODO: let's try this. Guessing we don't have to
-                #       bother with backoff times
+                #       bother with increasing backoff times
+                my $backoff = 100 + rand(300);
+                $self->_verbose("backing off for $backoff microseconds before trying again");
                 usleep(100 + rand(300));
                 next;
             }
