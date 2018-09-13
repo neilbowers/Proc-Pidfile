@@ -16,7 +16,7 @@ sub new
     my %args = @_;
     my $self = bless \%args, $class;
 
-    $self->{attempts} = 3 unless defined($self->{attempts});
+    $self->{retries} = 2 unless defined($self->{retries});
 
     unless ( $self->{pidfile} )
     {
@@ -107,7 +107,7 @@ sub _create_pidfile
             
             # this might be a race condition, or parallel smoke testers,
             # so we'll back off a random amount of time and try again
-            if ($attempt <= $self->{attempts}) {
+            if ($attempt <= $self->{retries}) {
                 ++$attempt;
                 # TODO: let's try this. Guessing we don't have to
                 #       bother with backoff times
@@ -221,6 +221,24 @@ for the existence of a pidfile, but will exit silently if one is found. This is
 useful for, for example, cron jobs, where you don't want to create a new
 process if one is already running, but you don't necessarily want to be
 informed of this by cron.
+
+=head2 Retries
+
+If another instance of your script is already running,
+we'll retry a couple of times,
+with a random number of microseconds between each attempt.
+
+You can specify the number of retries, for example if you
+want to try more times for some reason:
+
+ $pidfile = $pp->pidfile(retries => 4);
+
+By default this is set to 2,
+which means if the first attempt to set up a pidfile fails,
+it will try 2 more times, so three attempts in total.
+
+Setting retries to 0 (zero) will disable this feature.
+
 
 =head1 SEE ALSO
 
