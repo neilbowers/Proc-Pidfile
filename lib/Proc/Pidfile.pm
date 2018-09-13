@@ -224,7 +224,26 @@ informed of this by cron.
 
 =head1 SEE ALSO
 
-L<Proc::PID::File>
+L<Proc::PID::File> - provides a similar interface.
+
+L<PidFile> - provides effectively the same functionality,
+but via class methods. Hasn't been updated since 2011,
+and has quite a few CPAN Testers fails.
+
+L<IPC::Pidfile> - provides a simple interface, but has some restrictions,
+and its documentation even recommends you consider a different module,
+as it has a race condition.
+
+L<IPC::Lockfile> - very simple interface, and uses a different mechanism:
+it tries to lock the script file which used the module.
+The trouble with that is that you might be running someone else's script,
+and thus can't lock it.
+
+L<Sys::RunAlone> - another one with a simple default interface,
+but can be configured to retry. Based on locking, rather than a pid file.
+Doesn't work on Windows.
+
+L<Linux::Pidfile> - Linux-specific solution.
 
 =head1 REPOSITORY
 

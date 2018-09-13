@@ -1,5 +1,8 @@
 Revision history for Perl module Proc::Pidfile
 
+1.08_02 2018-09-13 NEILB
+    - Extended the SEE ALSO section with a bunch of modules for the same task.
+
 1.08_01 2018-09-12 NEILB
     - If pidfile already exists and process is running,
       retry a couple of times. Parallel smoke testers were producing
