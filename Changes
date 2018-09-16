@@ -1,5 +1,10 @@
 Revision history for Perl module Proc::Pidfile
 
+1.08_03 2018-09-16 NEILB
+    - I realised that some of the test cases should set the new "retries"
+      parameter to zero, otherwise they'll increase the chance of problems
+      with parallel smokers.
+
 1.08_02 2018-09-13 NEILB
     - Extended the SEE ALSO section with a bunch of modules for the same task.
     - Changed the parameter name from "attempts" to "retries",

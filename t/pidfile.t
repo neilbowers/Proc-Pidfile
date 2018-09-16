@@ -69,7 +69,7 @@ $ppid = $$;
 $pid = fork;
 if ( $pid == 0 )
 {
-    $obj = Proc::Pidfile->new();
+    $obj = Proc::Pidfile->new(retries => 0);
     exit( 0 );
 }
 ok( defined( $pid ), "fork successful" );
@@ -78,7 +78,7 @@ ok( $? >> 8 != 0, "child spotted existing pidfile" );
 $pid = fork;
 if ( $pid == 0 )
 {
-    $obj = Proc::Pidfile->new( silent => 1 );
+    $obj = Proc::Pidfile->new( silent => 1, retries => 0 );
     exit( 2 );
 }
 ok( defined( $pid ), "fork successful" );
@@ -97,7 +97,7 @@ SKIP: {
 
     print FH $pid;
     close( FH );
-    eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
+    eval { $obj = Proc::Pidfile->new( pidfile => $pidfile, retries => 0 ); };
     $err = $@; undef $@;
     ok( ! $err, "bogus pidfile ignored" );
     undef $obj;
@@ -117,7 +117,7 @@ SKIP: {
 
     print FH $pid;
     close( FH );
-    eval { $obj = Proc::Pidfile->new( pidfile => $pidfile ); };
+    eval { $obj = Proc::Pidfile->new( pidfile => $pidfile, retries => 0 ); };
     $err = $@; undef $@;
     like( $err, qr/already running: $pid/, "other users pid" );
     undef $obj;
