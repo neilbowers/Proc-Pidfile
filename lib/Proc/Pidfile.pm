@@ -4,11 +4,11 @@ use 5.006;
 use strict;
 use warnings;
 
-use Fcntl           qw/ :flock     /;
-use File::Basename  qw/ basename   /;
-use Carp            qw/ carp croak /;
-use Time::HiRes     qw/ usleep     /;
-require File::Spec;
+use Fcntl                   qw/ :flock         /;
+use File::Basename          qw/ basename       /;
+use Carp                    qw/ carp croak     /;
+use Time::HiRes             qw/ usleep         /;
+use File::Spec::Functions   qw/ catfile tmpdir /;
 
 sub new 
 { 
@@ -20,9 +20,11 @@ sub new
 
     unless ( $self->{pidfile} ) {
         my $basename = basename( $0 );
-        my $dir = -w "/var/run" ? "/var/run" : File::Spec->tmpdir();
+        my $dir      = tmpdir();
+
         croak "Can't write to $dir\n" unless -w $dir;
-        my $pidfile = "$dir/$basename.pid";
+
+        my $pidfile  = catfile($dir, "$basename.pid");
 
         # untaint the path, since it includes externally generated info
         # TODO: should we be a bit more pedantic on "valid path"?
@@ -196,7 +198,7 @@ the curent process
     # unlink $pidfile here
 
     my $pp = Proc::Pidfile->new();
-    # creates pidfile in default location - /var/run or File::Spec->tmpdir ...
+    # creates pidfile in default location
     my $pidfile = $pp->pidfile();
     # tells you where this pidfile is ...
 
@@ -208,8 +210,10 @@ the curent process
 =head1 DESCRIPTION
 
 Proc::Pidfile is a very simple OO interface which manages a pidfile for the
-current process. You can pass the path to a pidfile to use as an argument to
-the constructor, or you can let Proc::Pidfile choose one (basically, "/var/run/$basename", if you can write to /var/run, otherwise "/$tmpdir/$basename").
+current process.
+You can pass the path to a pidfile to use as an argument to the constructor,
+or you can let Proc::Pidfile choose one
+("/$tmpdir/$basename", where C<$tmpdir> is from C<File::Spec>).
 
 Pidfiles created by Proc::Pidfile are automatically removed on destruction of
 the object. At destruction, the module checks the process id in the pidfile

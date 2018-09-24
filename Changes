@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Pidfile
 
+1.08_04 2018-09-24 NEILB
+    - Don't bother with /var/run
+    - Use File::Spec to portably build paths
+
 1.08_03 2018-09-16 NEILB
     - I realised that some of the test cases should set the new "retries"
       parameter to zero, otherwise they'll increase the chance of problems
