@@ -9,9 +9,10 @@ use File::Spec::Functions qw/ tmpdir catfile /;
 # A quick google said that this is the default value for maxpid
 # and if we can't find a pid in the first 32k, I suspect we won't
 # find one at all.
-my $MAXPID = 32768;
-my $TMPDIR = tmpdir();
-my $DEFAULT_PIDFILE = catfile($TMPDIR, "Proc-Pidfile.test.pid");
+$0 = "Proc-Pidfile-Test-$$";
+my $MAXPID          = 32768;
+my $TMPDIR          = tmpdir();
+my $DEFAULT_PIDFILE = catfile($TMPDIR, "Proc-Pidfile-Test-$$.pid");
 
 use Test::More tests => 24;
 BEGIN { require_ok( 'Proc::Pidfile' ); }
