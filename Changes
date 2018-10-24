@@ -1,5 +1,9 @@
 Revision history for Perl module Proc::Pidfile
 
+1.09 2018-09-26 NEILB
+    - Only one odd looking fail on CPAN Testers, so doing a non-developer
+      release, as that will get more testing.
+
 1.08_05 2018-09-26 NEILB
     - After lots of testing to try and cope with parallel smoke testers,
       decided its best to avoid that problem by having each installation
