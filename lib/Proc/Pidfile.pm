@@ -187,7 +187,7 @@ sub _destroy_pidfile
 =head1 NAME
 
 Proc::Pidfile - a simple OO Perl module for maintaining a process id file for
-the curent process
+the current process
 
 =head1 SYNOPSIS
 
