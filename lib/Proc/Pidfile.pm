@@ -236,7 +236,7 @@ with a random number of microseconds between each attempt.
 You can specify the number of retries, for example if you
 want to try more times for some reason:
 
- $pidfile = $pp->pidfile(retries => 4);
+ my $pp = Proc::Pidfile->new(retries => 4);
 
 By default this is set to 2,
 which means if the first attempt to set up a pidfile fails,
