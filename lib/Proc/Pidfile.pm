@@ -17,6 +17,7 @@ sub new
     my $self = bless \%args, $class;
 
     $self->{retries} = 2 unless defined($self->{retries});
+    $self->{backoff} = sub { 100 + rand(300) } unless defined($self->{backoff});
 
     unless ( $self->{pidfile} ) {
         my $basename = basename( $0 );
@@ -112,7 +113,7 @@ sub _create_pidfile
                 ++$attempt;
                 # TODO: let's try this. Guessing we don't have to
                 #       bother with increasing backoff times
-                my $backoff = 100 + rand(300);
+                my $backoff = $self->{backoff}->();
                 $self->_verbose("backing off for $backoff microseconds before trying again");
                 usleep($backoff);
                 next;
@@ -244,6 +245,12 @@ it will try 2 more times, so three attempts in total.
 
 Setting retries to 0 (zero) will disable this feature.
 
+If you want to generate the number of microseconds to wait yourself,
+you can pass a code reference generating it to the constructor.
+
+ my $backoff = 100;
+ my $pp = Proc::Pidfile->new(retries => 4,
+                             backoff => sub { $backoff *= 2 });
 
 =head1 SEE ALSO
 
